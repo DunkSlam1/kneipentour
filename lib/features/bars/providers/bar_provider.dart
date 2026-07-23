@@ -73,6 +73,14 @@ class BarNotifier extends Notifier<List<Bar>> {
   Future<void> load() async {
     final saved = await _repository.load();
 
+    print('GESPEICHERTE DATEN:');
+
+    for (final entry in saved.entries) {
+      if (entry.value.visited) {
+        print('${entry.key}: besucht=${entry.value.visited}');
+      }
+    }
+
     _stateMap.clear();
 
     for (final bar in _baseBars) {
