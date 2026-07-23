@@ -21,6 +21,8 @@ class SyncService {
 
   final Ref ref;
 
+  bool _isDownloading = false;
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Timer? _timer;
@@ -37,6 +39,10 @@ class SyncService {
   }
 
   Future<void> _syncNow() async {
+    if (_isDownloading) {
+      print('Download läuft - kein Upload');
+      return;
+    }
     final syncConfig = await ref.read(syncProvider.future);
 
     if (!syncConfig.isConnected) {
@@ -93,60 +99,72 @@ class SyncService {
   }
 
   Future<void> downloadBars() async {
-    final syncConfig = await ref.read(syncProvider.future);
+    _isDownloading = true;
 
-    if (syncConfig.tourId == null) {
-      return;
+    try {
+      final syncConfig = await ref.read(syncProvider.future);
+
+      if (syncConfig.tourId == null) {
+        return;
+      }
+
+      final snapshot = await _firestore
+          .collection('tours')
+          .doc(syncConfig.tourId)
+          .collection('bars')
+          .get();
+
+      final Map<String, BarUserData> bars = {};
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data();
+
+        bars[doc.id] = BarUserData.fromJson({...data, 'barId': doc.id});
+      }
+
+      await _barRepository.save(bars);
+      await ref.read(barProvider.notifier).reload();
+
+      if (bars.isNotEmpty) {
+        print('ERSTE BAR BESUCHT: ${bars.values.first.visited}');
+      }
+
+      print('${bars.length} Bars aus Firebase geladen');
+    } finally {
+      _isDownloading = false;
     }
-
-    final snapshot = await _firestore
-        .collection('tours')
-        .doc(syncConfig.tourId)
-        .collection('bars')
-        .get();
-
-    final Map<String, BarUserData> bars = {};
-
-    for (final doc in snapshot.docs) {
-      final data = doc.data();
-
-      bars[doc.id] = BarUserData.fromJson({...data, 'barId': doc.id});
-    }
-
-    await _barRepository.save(bars);
-    await ref.read(barProvider.notifier).reload();
-
-    if (bars.isNotEmpty) {
-      print('ERSTE BAR BESUCHT: ${bars.values.first.visited}');
-    }
-
-    print('${bars.length} Bars aus Firebase geladen');
   }
 
   Future<void> downloadReviews() async {
-    final syncConfig = await ref.read(syncProvider.future);
+    _isDownloading = true;
 
-    if (syncConfig.tourId == null) {
-      return;
+    try {
+      final syncConfig = await ref.read(syncProvider.future);
+
+      if (syncConfig.tourId == null) {
+        return;
+      }
+
+      final snapshot = await _firestore
+          .collection('tours')
+          .doc(syncConfig.tourId)
+          .collection('reviews')
+          .get();
+
+      final Map<String, BarReviewData> reviews = {};
+
+      for (final doc in snapshot.docs) {
+        reviews[doc.id] = BarReviewData.fromJson(doc.id, doc.data());
+      }
+
+      await _reviewRepository.save(reviews);
+
+      await ref.read(barReviewProvider.notifier).reload();
+
+      print('${reviews.length} Reviews aus Firebase geladen');
+    } finally {
+      _isDownloading = false;
     }
-
-    final snapshot = await _firestore
-        .collection('tours')
-        .doc(syncConfig.tourId)
-        .collection('reviews')
-        .get();
-
-    final Map<String, BarReviewData> reviews = {};
-
-    for (final doc in snapshot.docs) {
-      reviews[doc.id] = BarReviewData.fromJson(doc.id, doc.data());
-    }
-
-    await _reviewRepository.save(reviews);
-
-    await ref.read(barReviewProvider.notifier).reload();
-
-    print('${reviews.length} Reviews aus Firebase geladen');
   }
 
   Future<void> syncOnStartup() async {
