@@ -16,7 +16,7 @@ class BarReviewNotifier extends Notifier<Map<String, BarReviewData>> {
     _repository = ref.read(barReviewDataRepositoryProvider);
     _syncService = ref.read(syncServiceProvider);
 
-    load();
+    _load();
 
     return {};
   }
@@ -27,7 +27,11 @@ class BarReviewNotifier extends Notifier<Map<String, BarReviewData>> {
     state = {};
   }
 
-  Future<void> load() async {
+  Future<void> reload() async {
+    await _load();
+  }
+
+  Future<void> _load() async {
     final saved = await _repository.load();
 
     state = saved;

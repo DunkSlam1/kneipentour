@@ -66,9 +66,14 @@ class BarNotifier extends Notifier<List<Bar>> {
   // ---------------------------
   // LOAD / SAVE
   // ---------------------------
+  Future<void> reload() async {
+    await load();
+  }
 
   Future<void> load() async {
     final saved = await _repository.load();
+
+    _stateMap.clear();
 
     for (final bar in _baseBars) {
       final data = saved[bar.id];

@@ -114,7 +114,7 @@ class SyncService {
     }
 
     await _barRepository.save(bars);
-    await ref.read(barProvider.notifier).load();
+    await ref.read(barProvider.notifier).reload();
 
     if (bars.isNotEmpty) {
       print('ERSTE BAR BESUCHT: ${bars.values.first.visited}');
@@ -144,7 +144,7 @@ class SyncService {
 
     await _reviewRepository.save(reviews);
 
-    await ref.read(barReviewProvider.notifier).load();
+    await ref.read(barReviewProvider.notifier).reload();
 
     print('${reviews.length} Reviews aus Firebase geladen');
   }
