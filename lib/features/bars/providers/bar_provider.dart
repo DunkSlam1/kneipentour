@@ -94,6 +94,10 @@ class BarNotifier extends Notifier<List<Bar>> {
     print('BAR STATE NACH LOAD: ${testBar.name} besucht=${testBar.visited}');
 
     state = _applyPipeline(_stateMap.values.toList());
+
+    print(
+      'UI STATE UPDATE: ${state.where((b) => b.visited).map((b) => b.name).toList()}',
+    );
   }
 
   Future<void> _save() async {
