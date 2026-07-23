@@ -202,6 +202,11 @@ class SyncService {
         .doc(syncConfig.tourId)
         .snapshots()
         .listen((event) async {
+          if (_isDownloading) {
+            print('Download läuft bereits - ignoriere Event');
+            return;
+          }
+
           if (!event.exists) {
             return;
           }
@@ -223,6 +228,11 @@ class SyncService {
           }
 
           // Änderung von anderem Gerät übernehmen
+          // Änderung von anderem Gerät übernehmen
+          print('Fremde Änderung erkannt - warte kurz');
+
+          await Future.delayed(const Duration(seconds: 2));
+
           print('Fremde Änderung - lade Daten');
 
           await downloadBars();
