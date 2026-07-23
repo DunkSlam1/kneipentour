@@ -31,6 +31,8 @@ class SyncService {
   late final BarReviewDataRepository _reviewRepository;
 
   void notifyDataChanged() {
+    print('notifyDataChanged() aufgerufen');
+
     _timer?.cancel();
 
     _timer = Timer(const Duration(seconds: 2), () {
@@ -44,6 +46,12 @@ class SyncService {
       return;
     }
     final syncConfig = await ref.read(syncProvider.future);
+
+    print('');
+    print('==============================');
+    print('UPLOAD START');
+    print('Gerät: ${syncConfig.deviceId}');
+    print('==============================');
 
     if (!syncConfig.isConnected) {
       print('Keine Tour verbunden - kein Upload');
@@ -90,6 +98,9 @@ class SyncService {
       print('${payload.bars.length} Bars synchronisiert');
       print('${payload.reviews.length} Reviews synchronisiert');
       print('Firestore-Test erfolgreich');
+      print('UPLOAD ENDE');
+      print('==============================');
+      print('');
     } catch (e) {
       print('Firestore-Fehler: $e');
     }
@@ -97,6 +108,11 @@ class SyncService {
 
   Future<void> downloadBars() async {
     _isDownloading = true;
+
+    print('');
+    print('------------------------');
+    print('DOWNLOAD START');
+    print('------------------------');
 
     try {
       final syncConfig = await ref.read(syncProvider.future);
@@ -126,6 +142,10 @@ class SyncService {
 
       print('${bars.length} Bars aus Firebase geladen');
     } finally {
+      print('DOWNLOAD ENDE');
+      print('------------------------');
+      print('');
+
       _isDownloading = false;
     }
   }
