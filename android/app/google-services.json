@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "899930397516",
+    "project_id": "kneipentour-a270f",
+    "storage_bucket": "kneipentour-a270f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:899930397516:android:d57de99ae01c856b9ccde9",
+        "android_client_info": {
+          "package_name": "com.example.kneipentour"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB02ZKDfmU4AXokG7hEKIFrIFWnJp0m5PQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

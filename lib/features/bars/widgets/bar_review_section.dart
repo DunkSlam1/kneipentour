@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/bar.dart';
-import '../models/bar_review.dart';
+import '../models/bar_review_data.dart';
 import '../providers/bar_review_provider.dart';
 
 class BarReviewSection extends ConsumerStatefulWidget {
@@ -25,7 +25,7 @@ class _BarReviewSectionState extends ConsumerState<BarReviewSection> {
 
     final review =
         ref.read(barReviewProvider)[widget.bar.id] ??
-        BarReview(barId: widget.bar.id);
+        BarReviewData(barId: widget.bar.id);
 
     beerController = TextEditingController(text: review.beerPrices);
 
@@ -47,7 +47,8 @@ class _BarReviewSectionState extends ConsumerState<BarReviewSection> {
   Widget build(BuildContext context) {
     final reviews = ref.watch(barReviewProvider);
 
-    final review = reviews[widget.bar.id] ?? BarReview(barId: widget.bar.id);
+    final review =
+        reviews[widget.bar.id] ?? BarReviewData(barId: widget.bar.id);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

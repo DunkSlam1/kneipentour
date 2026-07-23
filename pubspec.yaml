@@ -38,6 +38,8 @@ dependencies:
 
   # IDs erzeugen
   uuid: ^4.5.1
+  firebase_core: ^4.12.1
+  cloud_firestore: ^6.7.1
 
 dev_dependencies:
   flutter_lints: ^6.0.0

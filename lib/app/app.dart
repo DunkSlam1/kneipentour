@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:kneipentour/app/main_navigation.dart';
 import 'package:kneipentour/features/settings/providers/settings_provider.dart';
+import 'package:kneipentour/features/sync/providers/sync_startup_provider.dart';
 
 class KneipenTourApp extends ConsumerWidget {
   const KneipenTourApp({super.key});
@@ -10,6 +11,8 @@ class KneipenTourApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
+
+    ref.watch(syncStartupProvider);
 
     return MaterialApp(
       title: 'KneipenTour',

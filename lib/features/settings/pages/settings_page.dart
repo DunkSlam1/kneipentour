@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../bars/providers/bar_provider.dart';
 import '../../bars/providers/bar_review_provider.dart';
 import '../providers/settings_provider.dart';
+import '../../sync/providers/sync_provider.dart';
+import '../../sync/utils/sync_id_generator.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -14,7 +16,8 @@ class SettingsPage extends ConsumerWidget {
     final reviewNotifier = ref.read(barReviewProvider.notifier);
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
-
+    final syncAsync = ref.watch(syncProvider);
+    final syncNotifier = ref.read(syncProvider.notifier);
     return Scaffold(
       appBar: AppBar(title: const Text('Einstellungen')),
 
@@ -116,6 +119,94 @@ class SettingsPage extends ConsumerWidget {
 
           const SizedBox(height: 24),
 
+          const SizedBox(height: 24),
+
+          // SYNCHRONISATION
+          const Text(
+            'Synchronisation',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 8),
+
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: syncAsync.when(
+                loading: () {
+                  return const Center(child: CircularProgressIndicator());
+                },
+
+                error: (error, stack) {
+                  return Text('Fehler: $error');
+                },
+
+                data: (sync) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        sync.isConnected
+                            ? 'Tour verbunden'
+                            : 'Keine Tour verbunden',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      if (sync.isConnected)
+                        Text('Tour-Code: ${sync.tourId}')
+                      else
+                        const Text(
+                          'Erstelle später eine gemeinsame Tour '
+                          'oder trete einer bestehenden bei.',
+                        ),
+
+                      const SizedBox(height: 12),
+
+                      if (sync.isConnected)
+                        FilledButton.icon(
+                          icon: const Icon(Icons.link_off),
+                          label: const Text('Verbindung löschen'),
+                          onPressed: () {
+                            syncNotifier.clearSync();
+                          },
+                        )
+                      else
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            FilledButton.icon(
+                              icon: const Icon(Icons.add_link),
+                              label: const Text('Tour erstellen'),
+                              onPressed: () {
+                                final id = SyncIdGenerator.generate();
+
+                                syncNotifier.createTour(id);
+                              },
+                            ),
+
+                            const SizedBox(height: 8),
+
+                            OutlinedButton.icon(
+                              icon: const Icon(Icons.login),
+                              label: const Text('Tour beitreten'),
+                              onPressed: () {
+                                _showJoinDialog(context, syncNotifier);
+                              },
+                            ),
+                          ],
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+
           // ÜBER
           const Text(
             'Über KneipenTour',
@@ -155,6 +246,51 @@ class SettingsPage extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showJoinDialog(BuildContext context, SyncNotifier syncNotifier) {
+    final controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Tour beitreten'),
+
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'Tour-Code',
+              hintText: 'Code eingeben',
+            ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Abbrechen'),
+            ),
+
+            FilledButton(
+              onPressed: () {
+                final code = controller.text.trim().toUpperCase();
+
+                if (code.isEmpty) {
+                  return;
+                }
+
+                syncNotifier.joinTour(code);
+
+                Navigator.pop(context);
+              },
+              child: const Text('Verbinden'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

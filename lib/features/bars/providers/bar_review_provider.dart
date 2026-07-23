@@ -1,38 +1,50 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/bar_review.dart';
-import '../storage/bar_review_storage.dart';
+import '../models/bar_review_data.dart';
+import '../repositories/bar_review_data_repository.dart';
+import 'storage_provider.dart';
 
-class BarReviewNotifier extends Notifier<Map<String, BarReview>> {
+import '../../sync/providers/sync_service_provider.dart';
+import '../../sync/services/sync_service.dart';
+
+class BarReviewNotifier extends Notifier<Map<String, BarReviewData>> {
+  late final BarReviewDataRepository _repository;
+  late final SyncService _syncService;
+
   @override
-  Map<String, BarReview> build() {
-    _load();
+  Map<String, BarReviewData> build() {
+    _repository = ref.read(barReviewDataRepositoryProvider);
+    _syncService = ref.read(syncServiceProvider);
+
+    load();
 
     return {};
   }
 
   Future<void> clearReviews() async {
-    await BarReviewStorage.clear();
+    await _repository.clear();
 
     state = {};
   }
 
-  Future<void> _load() async {
-    final saved = await BarReviewStorage.load();
+  Future<void> load() async {
+    final saved = await _repository.load();
 
     state = saved;
   }
 
   // Bewertung einer Bar holen
-  BarReview getReview(String barId) {
-    return state[barId] ?? BarReview(barId: barId);
+  BarReviewData getReview(String barId) {
+    return state[barId] ?? BarReviewData(barId: barId);
   }
 
   // komplette Bewertung setzen
-  void updateReview(BarReview review) {
+  void updateReview(BarReviewData review) {
     state = {...state, review.barId: review};
 
-    BarReviewStorage.save(state);
+    _repository.save(state);
+
+    _syncService.notifyDataChanged();
   }
 
   // einzelne Kategorie ändern
@@ -44,7 +56,7 @@ class BarReviewNotifier extends Notifier<Map<String, BarReview>> {
   }) {
     final current = getReview(barId);
 
-    BarReview updated;
+    BarReviewData updated;
 
     switch (category) {
       case 'location':
@@ -95,6 +107,6 @@ class BarReviewNotifier extends Notifier<Map<String, BarReview>> {
 }
 
 final barReviewProvider =
-    NotifierProvider<BarReviewNotifier, Map<String, BarReview>>(
+    NotifierProvider<BarReviewNotifier, Map<String, BarReviewData>>(
       BarReviewNotifier.new,
     );

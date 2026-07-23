@@ -1,0 +1,166 @@
+import 'dart:async';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../bars/repositories/bar_data_repository.dart';
+import '../../bars/repositories/bar_review_data_repository.dart';
+import '../../bars/providers/storage_provider.dart';
+import '../models/sync_payload.dart';
+import '../providers/sync_provider.dart';
+import '../../bars/models/bar_user_data.dart';
+import '../../bars/models/bar_review_data.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../bars/providers/bar_provider.dart';
+import '../../bars/providers/bar_review_provider.dart';
+
+class SyncService {
+  SyncService(this.ref) {
+    _barRepository = ref.read(barDataRepositoryProvider);
+    _reviewRepository = ref.read(barReviewDataRepositoryProvider);
+  }
+
+  final Ref ref;
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Timer? _timer;
+
+  late final BarDataRepository _barRepository;
+  late final BarReviewDataRepository _reviewRepository;
+
+  void notifyDataChanged() {
+    _timer?.cancel();
+
+    _timer = Timer(const Duration(seconds: 2), () {
+      _syncNow();
+    });
+  }
+
+  Future<void> _syncNow() async {
+    final syncConfig = await ref.read(syncProvider.future);
+
+    if (!syncConfig.isConnected) {
+      print('Keine Tour verbunden - kein Upload');
+      return;
+    }
+
+    print('Aktuelle Tour: ${syncConfig.tourId}');
+
+    final bars = await _barRepository.load();
+
+    final reviews = await _reviewRepository.load();
+
+    final payload = SyncPayload(bars: bars, reviews: reviews);
+
+    print('Sync-Paket erstellt');
+    print('Bars: ${payload.bars.length}');
+    print('Reviews: ${payload.reviews.length}');
+
+    try {
+      await _firestore.collection('tours').doc(syncConfig.tourId).set({
+        'bars': payload.bars.length,
+        'reviews': payload.reviews.length,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      for (final bar in payload.bars.values) {
+        await _firestore
+            .collection('tours')
+            .doc(syncConfig.tourId)
+            .collection('bars')
+            .doc(bar.barId)
+            .set(bar.toJson());
+      }
+
+      print('${payload.bars.length} Bars synchronisiert');
+
+      for (final review in payload.reviews.values) {
+        await _firestore
+            .collection('tours')
+            .doc(syncConfig.tourId)
+            .collection('reviews')
+            .doc(review.barId)
+            .set(review.toJson());
+      }
+
+      print('${payload.reviews.length} Reviews synchronisiert');
+
+      print('Firestore-Test erfolgreich');
+    } catch (e) {
+      print('Firestore-Fehler: $e');
+    }
+  }
+
+  Future<void> downloadBars() async {
+    final syncConfig = await ref.read(syncProvider.future);
+
+    if (syncConfig.tourId == null) {
+      return;
+    }
+
+    final snapshot = await _firestore
+        .collection('tours')
+        .doc(syncConfig.tourId)
+        .collection('bars')
+        .get();
+
+    final Map<String, BarUserData> bars = {};
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+
+      bars[doc.id] = BarUserData.fromJson({...data, 'barId': doc.id});
+    }
+
+    await _barRepository.save(bars);
+    await ref.read(barProvider.notifier).load();
+
+    if (bars.isNotEmpty) {
+      print('ERSTE BAR BESUCHT: ${bars.values.first.visited}');
+    }
+
+    print('${bars.length} Bars aus Firebase geladen');
+  }
+
+  Future<void> downloadReviews() async {
+    final syncConfig = await ref.read(syncProvider.future);
+
+    if (syncConfig.tourId == null) {
+      return;
+    }
+
+    final snapshot = await _firestore
+        .collection('tours')
+        .doc(syncConfig.tourId)
+        .collection('reviews')
+        .get();
+
+    final Map<String, BarReviewData> reviews = {};
+
+    for (final doc in snapshot.docs) {
+      reviews[doc.id] = BarReviewData.fromJson(doc.id, doc.data());
+    }
+
+    await _reviewRepository.save(reviews);
+
+    await ref.read(barReviewProvider.notifier).load();
+
+    print('${reviews.length} Reviews aus Firebase geladen');
+  }
+
+  Future<void> syncOnStartup() async {
+    final syncConfig = await ref.read(syncProvider.future);
+
+    if (!syncConfig.isConnected) {
+      print('Keine Tour verbunden - kein Sync');
+      return;
+    }
+
+    print('Starte Synchronisation für ${syncConfig.tourId}');
+
+    await downloadBars();
+    await downloadReviews();
+
+    print('Startup-Sync abgeschlossen');
+  }
+}

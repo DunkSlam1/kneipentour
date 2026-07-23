@@ -4,9 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/bar.dart';
 import '../repositories/bar_repository.dart';
-import '../storage/bar_storage.dart';
 import '../utils/opening_status.dart';
 import '../utils/kneipen_day_helper.dart';
+import 'storage_provider.dart';
+import '../repositories/bar_data_repository.dart';
+import '../models/bar_user_data.dart';
+import '../../sync/providers/sync_service_provider.dart';
+import '../../sync/services/sync_service.dart';
 
 enum BarSortMode {
   alphabetical,
@@ -27,13 +31,18 @@ class BarNotifier extends Notifier<List<Bar>> {
 
   final Map<String, Bar> _stateMap = {};
   late final List<Bar> _baseBars = List.from(BarRepository.bars);
+  late final BarDataRepository _repository;
+  late final SyncService _syncService;
 
   Timer? _timer;
 
   @override
   List<Bar> build() {
+    _repository = ref.read(barDataRepositoryProvider);
+    _syncService = ref.read(syncServiceProvider);
+
     _startTimer();
-    _load();
+    load();
 
     ref.onDispose(() {
       _timer?.cancel();
@@ -51,6 +60,7 @@ class BarNotifier extends Notifier<List<Bar>> {
 
     _timer = Timer.periodic(const Duration(seconds: 30), (_) {
       state = _applyPipeline(_stateMap.values.toList());
+      _syncService.notifyDataChanged();
     });
   }
 
@@ -58,17 +68,17 @@ class BarNotifier extends Notifier<List<Bar>> {
   // LOAD / SAVE
   // ---------------------------
 
-  Future<void> _load() async {
-    final saved = await BarStorage.load();
+  Future<void> load() async {
+    final saved = await _repository.load();
 
     for (final bar in _baseBars) {
       final data = saved[bar.id];
 
       _stateMap[bar.id] = bar.copyWith(
-        visited: data?['visited'] ?? false,
-        favorite: data?['favorite'] ?? false,
-        rating: (data?['rating'] as num?)?.toDouble() ?? bar.rating,
-        visitedAt: data?['visitedAt'],
+        visited: data?.visited ?? false,
+        favorite: data?.favorite ?? false,
+        rating: data?.rating ?? bar.rating,
+        visitedAt: data?.visitedAt,
       );
     }
 
@@ -76,7 +86,18 @@ class BarNotifier extends Notifier<List<Bar>> {
   }
 
   Future<void> _save() async {
-    await BarStorage.save(_stateMap.values.toList());
+    final userData = {
+      for (final bar in _stateMap.values)
+        bar.id: BarUserData(
+          barId: bar.id,
+          visited: bar.visited,
+          favorite: bar.favorite,
+          rating: bar.rating,
+          visitedAt: bar.visitedAt,
+        ),
+    };
+
+    await _repository.save(userData);
   }
 
   // ---------------------------
@@ -98,7 +119,7 @@ class BarNotifier extends Notifier<List<Bar>> {
   // ---------------------------
 
   Future<void> clearPersonalData() async {
-    await BarStorage.clear();
+    await _repository.clear();
 
     for (final bar in _baseBars) {
       _stateMap[bar.id] = bar.copyWith(
@@ -122,7 +143,9 @@ class BarNotifier extends Notifier<List<Bar>> {
     );
 
     state = _applyPipeline(_stateMap.values.toList());
+
     _save();
+    _syncService.notifyDataChanged();
   }
 
   void toggleFavorite(String id) {
@@ -133,6 +156,7 @@ class BarNotifier extends Notifier<List<Bar>> {
 
     state = _applyPipeline(_stateMap.values.toList());
     _save();
+    _syncService.notifyDataChanged();
   }
 
   void setRating(String id, double rating) {
@@ -142,7 +166,9 @@ class BarNotifier extends Notifier<List<Bar>> {
     _stateMap[id] = bar.copyWith(rating: rating);
 
     state = _applyPipeline(_stateMap.values.toList());
+
     _save();
+    _syncService.notifyDataChanged();
   }
 
   void setVisitedDate(String id, DateTime date) {
@@ -154,6 +180,7 @@ class BarNotifier extends Notifier<List<Bar>> {
     state = _applyPipeline(_stateMap.values.toList());
 
     _save();
+    _syncService.notifyDataChanged();
   }
 
   Bar getById(String id) {

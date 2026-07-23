@@ -12,7 +12,12 @@ class BarDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bar = ref.watch(barProvider).firstWhere((b) => b.id == barId);
+    final bars = ref.watch(barProvider);
+
+    final bar = bars.firstWhere(
+      (b) => b.id == barId,
+      orElse: () => throw Exception('Bar nicht gefunden: $barId'),
+    );
 
     return Scaffold(
       appBar: AppBar(

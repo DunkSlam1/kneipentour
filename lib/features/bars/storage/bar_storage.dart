@@ -2,54 +2,41 @@ import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/bar.dart';
+import '../models/bar_user_data.dart';
 
 class BarStorage {
   static const _key = 'bars_state';
 
   /// Speichern
-  static Future<void> save(List<Bar> bars) async {
+  Future<void> save(Map<String, BarUserData> data) async {
     final prefs = await SharedPreferences.getInstance();
 
-    final data = bars
-        .map(
-          (b) => {
-            'id': b.id,
-            'visited': b.visited,
-            'favorite': b.favorite,
-            'rating': b.rating,
-            'visitedAt': b.visitedAt?.toIso8601String(),
-          },
-        )
-        .toList();
+    final jsonData = data.map((barId, userData) {
+      return MapEntry(barId, userData.toJson());
+    });
 
-    await prefs.setString(_key, jsonEncode(data));
+    await prefs.setString(_key, jsonEncode(jsonData));
   }
 
   /// Laden
-  static Future<Map<String, Map<String, dynamic>>> load() async {
+  Future<Map<String, BarUserData>> load() async {
     final prefs = await SharedPreferences.getInstance();
 
     final jsonString = prefs.getString(_key);
-    if (jsonString == null) return {};
 
-    final List decoded = jsonDecode(jsonString);
+    if (jsonString == null) {
+      return {};
+    }
 
-    return {
-      for (final item in decoded)
-        item['id']: {
-          'visited': item['visited'] ?? false,
-          'favorite': item['favorite'] ?? false,
-          'rating': (item['rating'] ?? 0.0).toDouble(),
-          'visitedAt': item['visitedAt'] != null
-              ? DateTime.parse(item['visitedAt'])
-              : null,
-        },
-    };
+    final Map<String, dynamic> decoded = jsonDecode(jsonString);
+
+    return decoded.map((barId, value) {
+      return MapEntry(barId, BarUserData.fromJson(value));
+    });
   }
 
   /// Alle gespeicherten persönlichen Bar-Daten löschen
-  static Future<void> clear() async {
+  Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.remove(_key);
