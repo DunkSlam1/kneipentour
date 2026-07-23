@@ -86,6 +86,13 @@ class BarNotifier extends Notifier<List<Bar>> {
       );
     }
 
+    final testBar = _stateMap.values.firstWhere(
+      (b) => b.visited,
+      orElse: () => _stateMap.values.first,
+    );
+
+    print('BAR STATE NACH LOAD: ${testBar.name} besucht=${testBar.visited}');
+
     state = _applyPipeline(_stateMap.values.toList());
   }
 
