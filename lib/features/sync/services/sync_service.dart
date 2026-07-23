@@ -60,6 +60,7 @@ class SyncService {
       await _firestore.collection('tours').doc(syncConfig.tourId).set({
         'bars': payload.bars.length,
         'reviews': payload.reviews.length,
+        'lastChangedBy': syncConfig.deviceId,
         'timestamp': FieldValue.serverTimestamp(),
       });
 
@@ -161,6 +162,57 @@ class SyncService {
     await downloadBars();
     await downloadReviews();
 
+    await startRealtimeSync();
+
     print('Startup-Sync abgeschlossen');
+  }
+
+  StreamSubscription<DocumentSnapshot>? _tourListener;
+
+  Future<void> startRealtimeSync() async {
+    final syncConfig = await ref.read(syncProvider.future);
+
+    if (!syncConfig.isConnected) {
+      print('Kein Live-Sync - keine Tour verbunden');
+      return;
+    }
+
+    _tourListener?.cancel();
+
+    _tourListener = _firestore
+        .collection('tours')
+        .doc(syncConfig.tourId)
+        .snapshots()
+        .listen((event) async {
+          if (!event.exists) {
+            return;
+          }
+
+          final data = event.data();
+
+          if (data == null) {
+            return;
+          }
+
+          final changedBy = data['lastChangedBy'];
+
+          print('🔥 Änderung erkannt von: $changedBy');
+
+          // eigene Änderung ignorieren
+          if (changedBy == syncConfig.deviceId) {
+            print('Eigene Änderung - ignoriere');
+            return;
+          }
+
+          // Änderung von anderem Gerät übernehmen
+          print('Fremde Änderung - lade Daten');
+
+          await downloadBars();
+          await downloadReviews();
+
+          print('Daten aus Firebase aktualisiert');
+        });
+
+    print('Live-Sync gestartet');
   }
 }

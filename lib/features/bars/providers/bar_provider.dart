@@ -60,7 +60,6 @@ class BarNotifier extends Notifier<List<Bar>> {
 
     _timer = Timer.periodic(const Duration(seconds: 30), (_) {
       state = _applyPipeline(_stateMap.values.toList());
-      _syncService.notifyDataChanged();
     });
   }
 

@@ -13,10 +13,18 @@ class SyncNotifier extends AsyncNotifier<SyncConfig> {
     final repository = ref.read(syncRepositoryProvider);
 
     final config = await repository.loadConfig();
+    final deviceId = await repository.loadDeviceId();
 
-    print('SYNC CONFIG GELADEN: ${config.tourId}');
+    final updatedConfig = SyncConfig(
+      tourId: config.tourId,
+      deviceId: deviceId,
+      loaded: true,
+    );
 
-    return config;
+    print('SYNC CONFIG GELADEN: ${updatedConfig.tourId}');
+    print('DEVICE ID: ${updatedConfig.deviceId}');
+
+    return updatedConfig;
   }
 
   Future<void> createTour(String tourId) async {
@@ -24,7 +32,11 @@ class SyncNotifier extends AsyncNotifier<SyncConfig> {
 
     await repository.saveTourId(tourId);
 
-    state = AsyncData(SyncConfig(tourId: tourId));
+    final deviceId = (state.value!).deviceId;
+
+    state = AsyncData(
+      SyncConfig(tourId: tourId, deviceId: deviceId, loaded: true),
+    );
   }
 
   Future<void> joinTour(String tourId) async {
@@ -32,7 +44,9 @@ class SyncNotifier extends AsyncNotifier<SyncConfig> {
 
     await repository.saveTourId(tourId);
 
-    final config = SyncConfig(tourId: tourId);
+    final deviceId = (state.value!).deviceId;
+
+    final config = SyncConfig(tourId: tourId, deviceId: deviceId, loaded: true);
 
     state = AsyncData(config);
   }
@@ -42,6 +56,8 @@ class SyncNotifier extends AsyncNotifier<SyncConfig> {
 
     await repository.clear();
 
-    state = const AsyncData(SyncConfig());
+    final deviceId = (state.value!).deviceId;
+
+    state = AsyncData(SyncConfig(deviceId: deviceId, loaded: true));
   }
 }
