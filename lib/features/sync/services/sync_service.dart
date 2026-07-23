@@ -63,7 +63,10 @@ class SyncService {
     print('Reviews: ${payload.reviews.length}');
 
     try {
-      await _firestore.collection('tours').doc(syncConfig.tourId).set({
+      final batch = _firestore.batch();
+      final tourDoc = _firestore.collection('tours').doc(syncConfig.tourId);
+
+      batch.set(tourDoc, {
         'bars': payload.bars.length,
         'reviews': payload.reviews.length,
         'lastChangedBy': syncConfig.deviceId,
@@ -71,27 +74,21 @@ class SyncService {
       });
 
       for (final bar in payload.bars.values) {
-        await _firestore
-            .collection('tours')
-            .doc(syncConfig.tourId)
-            .collection('bars')
-            .doc(bar.barId)
-            .set(bar.toJson());
-      }
+        final doc = tourDoc.collection('bars').doc(bar.barId);
 
-      print('${payload.bars.length} Bars synchronisiert');
+        batch.set(doc, bar.toJson());
+      }
 
       for (final review in payload.reviews.values) {
-        await _firestore
-            .collection('tours')
-            .doc(syncConfig.tourId)
-            .collection('reviews')
-            .doc(review.barId)
-            .set(review.toJson());
+        final doc = tourDoc.collection('reviews').doc(review.barId);
+
+        batch.set(doc, review.toJson());
       }
 
-      print('${payload.reviews.length} Reviews synchronisiert');
+      await batch.commit();
 
+      print('${payload.bars.length} Bars synchronisiert');
+      print('${payload.reviews.length} Reviews synchronisiert');
       print('Firestore-Test erfolgreich');
     } catch (e) {
       print('Firestore-Fehler: $e');
@@ -125,9 +122,7 @@ class SyncService {
       await _barRepository.save(bars);
       await ref.read(barProvider.notifier).reload();
 
-      if (bars.isNotEmpty) {
-        print('ERSTE BAR BESUCHT: ${bars.values.first.visited}');
-      }
+      if (bars.isNotEmpty) {}
 
       print('${bars.length} Bars aus Firebase geladen');
     } finally {
@@ -177,8 +172,12 @@ class SyncService {
 
     print('Starte Synchronisation für ${syncConfig.tourId}');
 
+    print('Fremde Änderung - lade Daten');
+
     await downloadBars();
     await downloadReviews();
+
+    print('Daten aus Firebase aktualisiert');
 
     await startRealtimeSync();
 
@@ -229,16 +228,10 @@ class SyncService {
 
           // Änderung von anderem Gerät übernehmen
           // Änderung von anderem Gerät übernehmen
-          print('Fremde Änderung erkannt - warte kurz');
-
-          await Future.delayed(const Duration(seconds: 2));
-
           print('Fremde Änderung - lade Daten');
 
           await downloadBars();
           await downloadReviews();
-
-          print('Daten aus Firebase aktualisiert');
         });
 
     print('Live-Sync gestartet');
