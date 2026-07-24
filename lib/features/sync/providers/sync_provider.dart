@@ -21,9 +21,6 @@ class SyncNotifier extends AsyncNotifier<SyncConfig> {
       loaded: true,
     );
 
-    print('SYNC CONFIG GELADEN: ${updatedConfig.tourId}');
-    print('DEVICE ID: ${updatedConfig.deviceId}');
-
     return updatedConfig;
   }
 

@@ -31,8 +31,6 @@ class SyncService {
   late final BarReviewDataRepository _reviewRepository;
 
   void notifyDataChanged() {
-    print('notifyDataChanged() aufgerufen');
-
     _timer?.cancel();
 
     _timer = Timer(const Duration(seconds: 2), () {
@@ -47,28 +45,18 @@ class SyncService {
     }
     final syncConfig = await ref.read(syncProvider.future);
 
-    print('');
-    print('==============================');
     print('UPLOAD START');
-    print('Gerät: ${syncConfig.deviceId}');
-    print('==============================');
 
     if (!syncConfig.isConnected) {
       print('Keine Tour verbunden - kein Upload');
       return;
     }
 
-    print('Aktuelle Tour: ${syncConfig.tourId}');
-
     final bars = await _barRepository.load();
 
     final reviews = await _reviewRepository.load();
 
     final payload = SyncPayload(bars: bars, reviews: reviews);
-
-    print('Sync-Paket erstellt');
-    print('Bars: ${payload.bars.length}');
-    print('Reviews: ${payload.reviews.length}');
 
     try {
       final batch = _firestore.batch();
@@ -95,12 +83,7 @@ class SyncService {
 
       await batch.commit();
 
-      print('${payload.bars.length} Bars synchronisiert');
-      print('${payload.reviews.length} Reviews synchronisiert');
-      print('Firestore-Test erfolgreich');
       print('UPLOAD ENDE');
-      print('==============================');
-      print('');
     } catch (e) {
       print('Firestore-Fehler: $e');
     }
@@ -109,10 +92,7 @@ class SyncService {
   Future<void> downloadBars() async {
     _isDownloading = true;
 
-    print('');
-    print('------------------------');
     print('DOWNLOAD START');
-    print('------------------------');
 
     try {
       final syncConfig = await ref.read(syncProvider.future);
@@ -139,12 +119,8 @@ class SyncService {
       await ref.read(barProvider.notifier).reload();
 
       if (bars.isNotEmpty) {}
-
-      print('${bars.length} Bars aus Firebase geladen');
     } finally {
       print('DOWNLOAD ENDE');
-      print('------------------------');
-      print('');
 
       _isDownloading = false;
     }
@@ -175,8 +151,6 @@ class SyncService {
       await _reviewRepository.save(reviews);
 
       await ref.read(barReviewProvider.notifier).reload();
-
-      print('${reviews.length} Reviews aus Firebase geladen');
     } finally {
       _isDownloading = false;
     }
@@ -190,14 +164,8 @@ class SyncService {
       return;
     }
 
-    print('Starte Synchronisation für ${syncConfig.tourId}');
-
-    print('Fremde Änderung - lade Daten');
-
     await downloadBars();
     await downloadReviews();
-
-    print('Daten aus Firebase aktualisiert');
 
     await startRealtimeSync();
 
@@ -247,8 +215,6 @@ class SyncService {
           }
 
           // Änderung von anderem Gerät übernehmen
-          // Änderung von anderem Gerät übernehmen
-          print('Fremde Änderung - lade Daten');
 
           await downloadBars();
           await downloadReviews();

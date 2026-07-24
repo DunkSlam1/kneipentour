@@ -73,14 +73,6 @@ class BarNotifier extends Notifier<List<Bar>> {
   Future<void> load() async {
     final saved = await _repository.load();
 
-    print('GESPEICHERTE DATEN:');
-
-    for (final entry in saved.entries) {
-      if (entry.value.visited) {
-        print('${entry.key}: besucht=${entry.value.visited}');
-      }
-    }
-
     _stateMap.clear();
 
     for (final bar in _baseBars) {
@@ -94,18 +86,7 @@ class BarNotifier extends Notifier<List<Bar>> {
       );
     }
 
-    final testBar = _stateMap.values.firstWhere(
-      (b) => b.visited,
-      orElse: () => _stateMap.values.first,
-    );
-
-    print('BAR STATE NACH LOAD: ${testBar.name} besucht=${testBar.visited}');
-
     state = _applyPipeline(_stateMap.values.toList());
-
-    print(
-      'UI STATE UPDATE: ${state.where((b) => b.visited).map((b) => b.name).toList()}',
-    );
   }
 
   Future<void> _save() async {
