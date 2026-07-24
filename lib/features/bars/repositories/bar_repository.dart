@@ -345,7 +345,7 @@ class BarRepository {
       district: "Innenstadt",
       latitude: 51.53322942204225,
       longitude: 9.93624970451513,
-      type: BarType.bar,
+      type: BarType.pub,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["14:00-02:00"],
@@ -418,7 +418,7 @@ class BarRepository {
       district: "Innenstadt",
       latitude: 51.53124090863948,
       longitude: 9.93117691880416,
-      type: BarType.bar,
+      type: BarType.pub,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["18:00-02:00"],
@@ -565,7 +565,7 @@ class BarRepository {
       district: "Südstadt",
       latitude: 51.527673548119274,
       longitude: 9.94400374478744,
-      type: BarType.bar,
+      type: BarType.pub,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["geschlossen"],
@@ -607,7 +607,7 @@ class BarRepository {
       district: "Südstadt",
       latitude: 51.52777264013049,
       longitude: 9.944002132368162,
-      type: BarType.bar,
+      type: BarType.pub,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["20:00-02:00"],
@@ -628,7 +628,7 @@ class BarRepository {
       district: "Innenstadt",
       latitude: 51.533166136349614,
       longitude: 9.934913547391746,
-      type: BarType.bar,
+      type: BarType.pub,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["geschlossen"],
@@ -649,7 +649,7 @@ class BarRepository {
       district: "Innenstadt",
       latitude: 51.53518176948132,
       longitude: 9.93404246457351,
-      type: BarType.bar,
+      type: BarType.pub,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["17:00-00:00"],
@@ -670,7 +670,7 @@ class BarRepository {
       district: "Innenstadt",
       latitude: 51.53762612981851,
       longitude: 9.934498407312713,
-      type: BarType.bar,
+      type: BarType.pub,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["18:00-00:30"],
@@ -712,7 +712,7 @@ class BarRepository {
       district: "Innenstadt",
       latitude: 51.53108681308384,
       longitude: 9.934348713890817,
-      type: BarType.bar,
+      type: BarType.sportsbar,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["geschlossen"],
@@ -816,7 +816,7 @@ class BarRepository {
       district: 'Innenstadt',
       latitude: 51.53246067546682,
       longitude: 9.92847966420253,
-      type: BarType.bar,
+      type: BarType.pub,
     ),
 
     Bar(
@@ -847,7 +847,7 @@ class BarRepository {
       district: "Innenstadt",
       latitude: 51.53213691085188,
       longitude: 9.938295518245354,
-      type: BarType.pub,
+      type: BarType.bar,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["09:00-00:00"],
@@ -868,7 +868,7 @@ class BarRepository {
       district: "Innenstadt",
       latitude: 51.53311586199236,
       longitude: 9.937592645816734,
-      type: BarType.bar,
+      type: BarType.pub,
       openingHours: const OpeningHours(
         weekly: {
           "Montag": ["12:00-00:00"],

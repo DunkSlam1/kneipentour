@@ -31,45 +31,93 @@ class RollingBarCard extends StatelessWidget {
   }
 
   Widget _buildIdleCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: const [
-            Text('...'),
-            Divider(),
-            Text(
-              'Kneipe ziehen 🍻',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return SizedBox.expand(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final titleSize = (constraints.maxHeight * 0.18).clamp(14.0, 30.0);
+
+          final textSize = (constraints.maxHeight * 0.10).clamp(10.0, 18.0);
+
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    '...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: textSize),
+                  ),
+                  const Divider(height: 8),
+                  Text(
+                    'Kneipe ziehen 🍻',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Divider(height: 8),
+                  Text(
+                    '...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: textSize),
+                  ),
+                ],
+              ),
             ),
-            Divider(),
-            Text('...'),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildRollingCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text(names.isNotEmpty ? names[0] : '...'),
+    return SizedBox.expand(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final titleSize = (constraints.maxHeight * 0.18).clamp(14.0, 30.0);
 
-            const Divider(),
+          final textSize = (constraints.maxHeight * 0.10).clamp(10.0, 18.0);
 
-            Text(
-              names.length > 1 ? names[1] : 'Kneipe wird gezogen...',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    names.isNotEmpty ? names[0] : '...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: textSize),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  Text(
+                    names.length > 1 ? names[1] : 'Kneipe wird gezogen...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  Text(
+                    names.length > 2 ? names[2] : '...',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: textSize),
+                  ),
+                ],
+              ),
             ),
-
-            const Divider(),
-
-            Text(names.length > 2 ? names[2] : '...'),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -79,47 +127,61 @@ class RollingBarCard extends StatelessWidget {
       return _buildIdleCard();
     }
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            const SizedBox(height: 24),
+    return SizedBox.expand(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final titleSize = (constraints.maxHeight * 0.14).clamp(14.0, 24.0);
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.local_bar),
+          final iconSize = (constraints.maxHeight * 0.15).clamp(20.0, 40.0);
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Icon(Icons.local_bar, size: iconSize),
 
-                const SizedBox(width: 8),
-
-                Text(
-                  selectedBar!.name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(width: 8),
-
-                IconButton(
-                  icon: const Icon(Icons.open_in_new),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => BarDetailPage(barId: selectedBar!.id),
+                  Flexible(
+                    child: Text(
+                      selectedBar!.name,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: titleSize,
+                        fontWeight: FontWeight.bold,
                       ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                    ),
+                  ),
 
-            const SizedBox(height: 24),
-          ],
-        ),
+                  Center(
+                    child: FilledButton.icon(
+                      style: FilledButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                      ),
+                      icon: const Icon(Icons.open_in_new, size: 18),
+                      label: const Text('Details'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                BarDetailPage(barId: selectedBar!.id),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

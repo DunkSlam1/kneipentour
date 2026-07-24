@@ -131,6 +131,7 @@ class _RandomBarSectionState extends State<RandomBarSection> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.max,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -190,28 +191,46 @@ class _RandomBarSectionState extends State<RandomBarSection> {
           ],
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
 
         SizedBox(
           width: double.infinity,
-          height: 44,
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.casino),
-            label: const Text('Kneipe ziehen 🍻'),
+          height: 56,
+          child: FilledButton(
             onPressed: widget.bars.isEmpty || isRolling ? null : pickBar,
+            style: FilledButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Icon(Icons.casino, size: 24),
+                SizedBox(width: 12),
+                Text(
+                  'Kneipe ziehen',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 12),
+                Icon(Icons.casino, size: 24),
+              ],
+            ),
           ),
         ),
 
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
 
-        AnimatedSize(
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeInOut,
+        Expanded(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.easeInOut,
 
-          child: RollingBarCard(
-            names: isRolling ? rollingNames : [],
-            selectedBar: selectedBar,
-            cardState: cardState,
+            child: RollingBarCard(
+              names: isRolling ? rollingNames : [],
+              selectedBar: selectedBar,
+              cardState: cardState,
+            ),
           ),
         ),
       ],

@@ -19,10 +19,10 @@ class TopBarsSection extends StatelessWidget {
       children: [
         const Text(
           'Top 3 Bars ⭐',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
 
-        const SizedBox(height: 8),
+        const SizedBox(height: 4),
 
         Column(
           children: List.generate(topBars.length, (index) {
@@ -34,8 +34,8 @@ class TopBarsSection extends StatelessWidget {
               _ => '🥉',
             };
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 2),
+            return SizedBox(
+              height: 24,
               child: Row(
                 children: [
                   Text(medal, style: const TextStyle(fontSize: 18)),
@@ -50,7 +50,7 @@ class TopBarsSection extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 2),
 
                   Text(
                     '⭐${bar.rating.toStringAsFixed(1)}',
@@ -59,8 +59,11 @@ class TopBarsSection extends StatelessWidget {
 
                   IconButton(
                     visualDensity: VisualDensity.compact,
-                    constraints: const BoxConstraints(),
-                    padding: const EdgeInsets.only(left: 8),
+                    constraints: const BoxConstraints(
+                      minWidth: 24,
+                      minHeight: 24,
+                    ),
+                    padding: EdgeInsets.zero,
                     icon: const Icon(Icons.open_in_new, size: 20),
                     onPressed: () {
                       Navigator.push(
@@ -76,8 +79,6 @@ class TopBarsSection extends StatelessWidget {
             );
           }),
         ),
-
-        const SizedBox(height: 8),
       ],
     );
   }
