@@ -6,7 +6,7 @@ import 'widgets/top_bars_section.dart';
 
 import 'widgets/progress_section.dart';
 import 'widgets/last_visited_section.dart';
-import 'widgets/discover_section.dart';
+import '../discover/widgets/discovery_section.dart';
 
 import '../../core/layout/home_layout.dart';
 import '../../core/layout/section_layout_calculator.dart';
@@ -82,8 +82,7 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: 8),
 
                 // 🎲 RANDOM BAR
-                // 🎲 RANDOM BAR
-                Expanded(child: DiscoverSection(bars: bars)),
+                Expanded(child: DiscoverySection()),
 
                 // ⭐ TOP 3 RANKING
                 SizedBox(

@@ -16,6 +16,17 @@ class RollingBarCard extends StatelessWidget {
     this.selectedBar,
   });
 
+  Widget _buildRollText(String text, {bool highlight = false}) {
+    return Text(
+      text,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: highlight ? 28 : 18,
+        fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     switch (cardState) {
@@ -31,94 +42,81 @@ class RollingBarCard extends StatelessWidget {
   }
 
   Widget _buildIdleCard() {
-    return SizedBox.expand(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final titleSize = (constraints.maxHeight * 0.18).clamp(14.0, 30.0);
-
-          final textSize = (constraints.maxHeight * 0.10).clamp(10.0, 18.0);
-
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    '...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: textSize),
-                  ),
-                  const Divider(height: 8),
-                  Text(
-                    'Kneipe ziehen 🍻',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: titleSize,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const Divider(height: 8),
-                  Text(
-                    '...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: textSize),
-                  ),
+                  _buildRollText('...'),
+
+                  const Divider(),
+
+                  _buildRollText('Kneipe ziehen 🍻', highlight: true),
+
+                  const Divider(),
+
+                  _buildRollText('...'),
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildRollingCard() {
-    return SizedBox.expand(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final titleSize = (constraints.maxHeight * 0.18).clamp(14.0, 30.0);
-
-          final textSize = (constraints.maxHeight * 0.10).clamp(10.0, 18.0);
-
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          elevation: 8,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    names.isNotEmpty ? names[0] : '...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: textSize),
-                  ),
+                  _buildRollText(names.isNotEmpty ? names[0] : '...'),
 
-                  const SizedBox(height: 12),
+                  const Divider(),
 
-                  Text(
+                  _buildRollText(
                     names.length > 1 ? names[1] : 'Kneipe wird gezogen...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: titleSize,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    highlight: true,
                   ),
 
-                  const SizedBox(height: 12),
+                  const Divider(),
 
-                  Text(
-                    names.length > 2 ? names[2] : '...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: textSize),
-                  ),
+                  _buildRollText(names.length > 2 ? names[2] : '...'),
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -127,62 +125,59 @@ class RollingBarCard extends StatelessWidget {
       return _buildIdleCard();
     }
 
-    return SizedBox.expand(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final titleSize = (constraints.maxHeight * 0.14).clamp(14.0, 24.0);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final titleSize = (constraints.maxHeight * 0.14).clamp(14.0, 24.0);
 
-          final iconSize = (constraints.maxHeight * 0.15).clamp(20.0, 40.0);
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Icon(Icons.local_bar, size: iconSize),
+        final iconSize = (constraints.maxHeight * 0.15).clamp(20.0, 40.0);
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Icon(Icons.local_bar, size: iconSize),
 
-                  Flexible(
-                    child: Text(
-                      selectedBar!.name,
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: titleSize,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Flexible(
+                  child: Text(
+                    selectedBar!.name,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: titleSize,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
 
-                  Center(
-                    child: FilledButton.icon(
-                      style: FilledButton.styleFrom(
-                        visualDensity: VisualDensity.compact,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
+                Center(
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                    ),
+                    icon: const Icon(Icons.open_in_new, size: 18),
+                    label: const Text('Details'),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => BarDetailPage(barId: selectedBar!.id),
                         ),
-                      ),
-                      icon: const Icon(Icons.open_in_new, size: 18),
-                      label: const Text('Details'),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                BarDetailPage(barId: selectedBar!.id),
-                          ),
-                        );
-                      },
-                    ),
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
