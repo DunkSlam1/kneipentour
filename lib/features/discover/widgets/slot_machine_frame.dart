@@ -22,6 +22,23 @@ class SlotMachineFrame extends StatelessWidget {
           clipBehavior: Clip.none,
           children: [
             // ==========================
+            // Füße (hinter dem Gehäuse)
+            // ==========================
+            Positioned(
+              bottom: -layout.height * 0.035,
+              left: layout.width * 0.18,
+
+              child: _buildFoot(layout, scheme),
+            ),
+
+            Positioned(
+              bottom: -layout.height * 0.035,
+              right: layout.width * 0.18,
+
+              child: _buildFoot(layout, scheme),
+            ),
+
+            // ==========================
             // Hauptgehäuse
             // ==========================
             Positioned(
@@ -45,7 +62,7 @@ class SlotMachineFrame extends StatelessWidget {
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.25),
                       blurRadius: layout.width * 0.035,
-                      offset: Offset(0, layout.height * 0.025),
+                      offset: Offset(0, layout.height * 0.035),
                     ),
                   ],
                 ),
@@ -153,6 +170,29 @@ class SlotMachineFrame extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildFoot(SlotMachineLayout layout, ColorScheme scheme) {
+    return Container(
+      width: layout.width * 0.14,
+      height: layout.height * 0.05,
+
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainer,
+
+        borderRadius: BorderRadius.circular(layout.borderRadius * 0.3),
+
+        border: Border.all(color: scheme.outline, width: 1),
+
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.25),
+            blurRadius: 6,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
     );
   }
 }
