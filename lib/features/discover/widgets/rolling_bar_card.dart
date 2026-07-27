@@ -21,19 +21,25 @@ class RollingBarCard extends StatelessWidget {
     double availableHeight, {
     bool highlight = false,
   }) {
-    final fontSize = (availableHeight * (highlight ? 0.18 : 0.13)).clamp(
-      highlight ? 18.0 : 12.0,
-      highlight ? 24.0 : 16.0,
+    final fontSize = (availableHeight * (highlight ? 0.16 : 0.12)).clamp(
+      highlight ? 14.0 : 11.0,
+      highlight ? 24.0 : 18.0,
     );
 
-    return Text(
-      text,
-      textAlign: TextAlign.center,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(
-        fontSize: fontSize,
-        fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
+    return SizedBox(
+      height: availableHeight * 0.22,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.visible,
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
+          ),
+        ),
       ),
     );
   }
