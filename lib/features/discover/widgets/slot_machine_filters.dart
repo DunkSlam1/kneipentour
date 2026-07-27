@@ -22,77 +22,133 @@ class SlotMachineFilters extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // ==========================
+        // Hauptauswahl
+        // ==========================
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Filter',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            _buildButton(
+              context,
+              icon: Icons.casino,
+              label: 'Alle',
+              active: selectedFilter == BarPickFilter.all,
+              onTap: () {
+                onFilterChanged(BarPickFilter.all);
+              },
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(width: 8),
 
-            Row(
-              children: [
-                _buildFilterButton(
-                  context,
-                  icon: Icons.casino,
-                  label: 'Alle',
-                  selected: selectedFilter == BarPickFilter.all,
-                  onTap: () {
-                    onFilterChanged(BarPickFilter.all);
-                  },
-                ),
-
-                const SizedBox(width: 6),
-
-                _buildFilterButton(
-                  context,
-                  icon: Icons.schedule,
-                  label: 'Offen',
-                  selected: selectedFilter == BarPickFilter.openNow,
-                  onTap: () {
-                    onFilterChanged(BarPickFilter.openNow);
-                  },
-                ),
-
-                const SizedBox(width: 6),
-
-                _buildFilterButton(
-                  context,
-                  icon: Icons.today,
-                  label: 'Heute',
-                  selected: selectedFilter == BarPickFilter.openToday,
-                  onTap: () {
-                    onFilterChanged(BarPickFilter.openToday);
-                  },
-                ),
-              ],
+            _buildButton(
+              context,
+              icon: Icons.schedule,
+              label: 'Offen',
+              active: selectedFilter == BarPickFilter.openNow,
+              onTap: () {
+                onFilterChanged(BarPickFilter.openNow);
+              },
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(width: 8),
 
-            const Divider(),
+            _buildButton(
+              context,
+              icon: Icons.today,
+              label: 'Heute',
+              active: selectedFilter == BarPickFilter.openToday,
+              onTap: () {
+                onFilterChanged(BarPickFilter.openToday);
+              },
+            ),
+          ],
+        ),
 
-            const SizedBox(height: 8),
+        const SizedBox(height: 12),
 
-            Align(
-              alignment: Alignment.centerLeft,
-              child: _buildFilterButton(
-                context,
-                icon: Icons.check_circle_outline,
-                label: 'Nur unbesuchte',
-                selected: onlyUnvisited,
-                expanded: false,
-                compact: true,
-                onTap: () {
-                  onUnvisitedChanged(!onlyUnvisited);
-                },
+        // ==========================
+        // Trennung
+        // ==========================
+        Container(
+          width: 170,
+          height: 1,
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+        ),
+
+        const SizedBox(height: 12),
+
+        // ==========================
+        // Kippschalter
+        // ==========================
+        _buildToggle(context),
+      ],
+    );
+  }
+
+  Widget _buildButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required bool active,
+    required VoidCallback onTap,
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: disabled ? null : onTap,
+
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+
+        height: 38,
+
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+
+        decoration: BoxDecoration(
+          color: active
+              ? Colors.amber.shade700
+              : scheme.surfaceContainerHighest,
+
+          borderRadius: BorderRadius.circular(20),
+
+          border: Border.all(
+            color: active ? Colors.amber : scheme.outline,
+
+            width: 1.2,
+          ),
+
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: Colors.amber.withValues(alpha: 0.6),
+
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : [],
+        ),
+
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+
+          children: [
+            Icon(icon, size: 17, color: active ? Colors.black : null),
+
+            const SizedBox(width: 5),
+
+            Text(
+              label,
+
+              style: TextStyle(
+                fontSize: 13,
+
+                fontWeight: active ? FontWeight.bold : FontWeight.normal,
+
+                color: active ? Colors.black : null,
               ),
             ),
           ],
@@ -101,61 +157,128 @@ class SlotMachineFilters extends StatelessWidget {
     );
   }
 
-  Widget _buildFilterButton(
-    BuildContext context, {
-    required IconData icon,
-    required String label,
-    required bool selected,
-    required VoidCallback onTap,
-    bool expanded = true,
-    bool compact = false,
-  }) {
-    final button = GestureDetector(
-      onTap: disabled ? null : onTap,
+  Widget _buildToggle(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
 
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
+    return Container(
+      width: 160,
+      height: 38,
 
-        height: compact ? 36 : 46,
+      padding: const EdgeInsets.all(4),
 
-        padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 12),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHighest,
 
-        decoration: BoxDecoration(
-          color: selected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(20),
 
-          borderRadius: BorderRadius.circular(14),
-        ),
+        border: Border.all(color: scheme.outline, width: 1.2),
+      ),
 
-        child: Row(
-          mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+      child: Row(
+        children: [
+          // =====================
+          // ALLE
+          // =====================
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
 
-          mainAxisAlignment: MainAxisAlignment.center,
+              onTap: () {
+                onUnvisitedChanged(false);
+              },
 
-          children: [
-            Icon(icon, size: 18, color: selected ? Colors.black : null),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
 
-            const SizedBox(width: 5),
+                alignment: Alignment.center,
 
-            Text(
-              label,
+                decoration: BoxDecoration(
+                  color: !onlyUnvisited
+                      ? Colors.amber.shade700
+                      : Colors.transparent,
 
-              style: TextStyle(
-                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                  borderRadius: BorderRadius.circular(18),
 
-                color: selected ? Colors.black : null,
+                  boxShadow: !onlyUnvisited
+                      ? [
+                          BoxShadow(
+                            color: Colors.amber.withValues(alpha: 0.6),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : [],
+                ),
+
+                child: Text(
+                  'Alle',
+
+                  style: TextStyle(
+                    fontSize: 13,
+
+                    fontWeight: !onlyUnvisited
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+
+                    color: !onlyUnvisited ? Colors.black : null,
+                  ),
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+
+          // =====================
+          // UNBESUCHT
+          // =====================
+          Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+
+              onTap: () {
+                onUnvisitedChanged(true);
+              },
+
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+
+                alignment: Alignment.center,
+
+                decoration: BoxDecoration(
+                  color: onlyUnvisited
+                      ? Colors.amber.shade700
+                      : Colors.transparent,
+
+                  borderRadius: BorderRadius.circular(18),
+
+                  boxShadow: onlyUnvisited
+                      ? [
+                          BoxShadow(
+                            color: Colors.amber.withValues(alpha: 0.6),
+                            blurRadius: 10,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : [],
+                ),
+
+                child: Text(
+                  'Unbesucht',
+
+                  style: TextStyle(
+                    fontSize: 13,
+
+                    fontWeight: onlyUnvisited
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+
+                    color: onlyUnvisited ? Colors.black : null,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
-
-    if (expanded) {
-      return Expanded(child: button);
-    }
-
-    return button;
   }
 }

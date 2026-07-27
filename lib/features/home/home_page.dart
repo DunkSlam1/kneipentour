@@ -6,7 +6,9 @@ import 'widgets/top_bars_section.dart';
 
 import 'widgets/progress_section.dart';
 import 'widgets/last_visited_section.dart';
+import 'widgets/daily_status_section.dart';
 import '../discover/widgets/discovery_section.dart';
+import 'widgets/achievement_section.dart';
 
 import '../../core/layout/home_layout.dart';
 import '../../core/layout/section_layout_calculator.dart';
@@ -81,8 +83,25 @@ class HomePage extends ConsumerWidget {
 
                 const SizedBox(height: 8),
 
-                // 🎲 RANDOM BAR
-                Expanded(child: DiscoverySection()),
+                // 📅 TAGESSTATUS
+                SizedBox(
+                  height: layout[HomeLayout.dailyStatus],
+                  child: DailyStatusSection(bars: bars),
+                ),
+
+                const SizedBox(height: 8),
+
+                // 🎲 DISCOVERY EINSTIEG
+                SizedBox(
+                  height: layout[HomeLayout.discover],
+                  child: const DiscoverySection(),
+                ),
+
+                // 🏆 ERFOLGE
+                SizedBox(
+                  height: layout[HomeLayout.achievements],
+                  child: AchievementSection(),
+                ),
 
                 // ⭐ TOP 3 RANKING
                 SizedBox(

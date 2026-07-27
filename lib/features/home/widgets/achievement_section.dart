@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../../discover/discover_page.dart';
+import '../../achievements/pages/achievements_page.dart';
 
-class DiscoverySection extends StatelessWidget {
-  const DiscoverySection({super.key});
+class AchievementSection extends StatelessWidget {
+  const AchievementSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -11,44 +11,40 @@ class DiscoverySection extends StatelessWidget {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      elevation: 4,
 
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => const DiscoverPage()),
+            MaterialPageRoute(builder: (_) => const AchievementsPage()),
           );
         },
 
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          padding: const EdgeInsets.all(12),
 
           child: Row(
             children: [
-              Icon(Icons.explore, size: 30, color: colorScheme.primary),
+              Icon(Icons.emoji_events, size: 32, color: Colors.amber.shade700),
 
               const SizedBox(width: 12),
 
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+
                   mainAxisAlignment: MainAxisAlignment.center,
 
                   children: [
                     Text(
-                      'Discovery 🍻',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      'Erfolge',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
 
                     const SizedBox(height: 4),
 
                     Text(
-                      'Entdecke neue Kneipen mit verschiedenen Tools.',
+                      'Deine Sammlung entdecken',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],

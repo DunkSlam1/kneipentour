@@ -1,4 +1,5 @@
 import '../models/bar.dart';
+import '../utils/kneipen_day_helper.dart';
 
 enum OpeningState { open, closed }
 
@@ -10,6 +11,10 @@ class OpeningStatus {
 }
 
 class OpeningStatusHelper {
+  static DateTime _getKneipenNow() {
+    return KneipenDayHelper.normalize(DateTime.now());
+  }
+
   static String getGermanWeekday(DateTime date) {
     switch (date.weekday) {
       case DateTime.monday:
@@ -53,8 +58,7 @@ class OpeningStatusHelper {
     final open = _parseTime(parts[0]);
     final close = _parseTime(parts[1]);
 
-    final now = DateTime.now();
-    final current = now.hour * 60 + now.minute;
+    final current = KneipenDayHelper.currentMinutes();
 
     int remaining;
 
@@ -81,14 +85,14 @@ class OpeningStatusHelper {
 
     final open = _parseTime(parts[0]);
 
-    final now = DateTime.now();
-    final current = now.hour * 60 + now.minute;
+    final current = KneipenDayHelper.currentMinutes();
 
-    int remaining = open - current;
-
-    if (remaining < 0) {
-      remaining = (24 * 60 - current) + open;
+    // Öffnungszeit heute bereits vorbei
+    if (open <= current) {
+      return "";
     }
+
+    final remaining = open - current;
 
     if (remaining < 60) {
       return "öffnet in $remaining Min";
@@ -104,14 +108,36 @@ class OpeningStatusHelper {
     final open = _parseTime(parts[0]);
     final close = _parseTime(parts[1]);
 
-    final now = DateTime.now();
-    final current = now.hour * 60 + now.minute;
+    final current = KneipenDayHelper.currentMinutes();
 
-    if (close > open) {
-      return current >= open && current < close;
+    int adjustedClose = close;
+
+    if (close <= open) {
+      adjustedClose += 24 * 60;
     }
 
-    return current >= open || current < close;
+    return current >= open && current < adjustedClose;
+  }
+
+  static bool isOpenToday(OpeningHours? openingHours) {
+    if (openingHours == null) {
+      return false;
+    }
+
+    final now = _getKneipenNow();
+    final weekday = getGermanWeekday(now);
+
+    final today = openingHours.weekly[weekday];
+
+    if (today == null || today.isEmpty) {
+      return false;
+    }
+
+    if (today.first == "geschlossen") {
+      return false;
+    }
+
+    return true;
   }
 
   static OpeningStatus getStatus(OpeningHours? openingHours) {
@@ -122,7 +148,7 @@ class OpeningStatusHelper {
       );
     }
 
-    final now = DateTime.now();
+    final now = _getKneipenNow();
     final weekday = getGermanWeekday(now);
 
     final today = openingHours.weekly[weekday];
@@ -170,24 +196,37 @@ class OpeningStatusHelper {
       }
     }
 
-    // 3. GESCHLOSSEN → nächstes Öffnen
-    final nextDays = [now, now.add(const Duration(days: 1))];
+    // 3. GESCHLOSSEN → prüfen ob heute noch eine Öffnung kommt
+    final todayData = openingHours.weekly[weekday];
 
-    for (final day in nextDays) {
-      final weekday = getGermanWeekday(day);
-      final data = openingHours.weekly[weekday];
+    if (todayData != null &&
+        todayData.isNotEmpty &&
+        todayData.first != "geschlossen") {
+      for (final range in todayData) {
+        final parts = range.split('-');
 
-      if (data == null || data.isEmpty || data.first == "geschlossen") {
-        continue;
+        if (parts.length != 2) continue;
+
+        final open = _parseTime(parts[0]);
+        final close = _parseTime(parts[1]);
+
+        final current = now.hour * 60 + now.minute;
+
+        // zukünftige Öffnung heute
+        if (current < open) {
+          final text = _getOpeningInText(range);
+
+          return OpeningStatus(
+            state: OpeningState.closed,
+            text: text.isNotEmpty ? "Geschlossen • $text" : "Geschlossen",
+          );
+        }
+
+        // Öffnung heute vorbei
+        if (current >= close && close > open) {
+          continue;
+        }
       }
-
-      final range = data.first;
-      final text = _getOpeningInText(range);
-
-      return OpeningStatus(
-        state: OpeningState.closed,
-        text: text.isNotEmpty ? "Geschlossen • $text" : "Geschlossen",
-      );
     }
 
     return const OpeningStatus(state: OpeningState.closed, text: "Geschlossen");

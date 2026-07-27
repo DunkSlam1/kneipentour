@@ -42,4 +42,19 @@ class KneipenDayHelper {
         return "";
     }
   }
+
+  /// Aktuelle Uhrzeit in Minuten des Kneipentages.
+  /// Nach Mitternacht (bis rolloverHour) wird die Uhrzeit
+  /// hinter 24:00 weitergezählt.
+  static int currentMinutes() {
+    final now = DateTime.now();
+
+    int minutes = now.hour * 60 + now.minute;
+
+    if (now.hour < rolloverHour) {
+      minutes += 24 * 60;
+    }
+
+    return minutes;
+  }
 }

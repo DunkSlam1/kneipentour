@@ -13,10 +13,22 @@ class HomeLayout {
     maxHeight: 85,
   );
 
+  static const dailyStatus = SectionLayout(
+    targetPercent: 0.10,
+    minHeight: 80,
+    maxHeight: 100,
+  );
+
   static const discover = SectionLayout(
-    targetPercent: 0.50,
-    minHeight: 220,
-    fillRemainingSpace: true,
+    targetPercent: 0.10,
+    minHeight: 80,
+    maxHeight: 100,
+  );
+
+  static const achievements = SectionLayout(
+    targetPercent: 0.10,
+    minHeight: 80,
+    maxHeight: 100,
   );
 
   static const topBars = SectionLayout(

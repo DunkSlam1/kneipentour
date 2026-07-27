@@ -155,53 +155,94 @@ class _SlotMachinePageState extends ConsumerState<SlotMachinePage> {
           children: [
             Expanded(
               child: SlotMachineFrame(
-                child: Stack(
-                  clipBehavior: Clip.none,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final machineHeight = constraints.maxHeight;
 
-                  children: [
-                    Positioned(
-                      top: 40,
-                      left: 16,
-                      right: 16,
-                      bottom: 70,
+                    return Stack(
+                      clipBehavior: Clip.none,
 
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
+                      children: [
+                        // ==========================
+                        // Rolling Bar Fenster
+                        // ==========================
+                        Positioned(
+                          top: machineHeight * 0.02,
+                          left: 16,
+                          right: 16,
+                          height: machineHeight * 0.44,
 
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
 
-                          border: Border.all(
-                            color: Colors.amber.shade700,
-                            width: 3,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(18),
+
+                              border: Border.all(
+                                color: Colors.amber.shade700,
+                                width: 3,
+                              ),
+
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                            ),
+
+                            child: RollingBarCard(
+                              names: isRolling ? rollingNames : [],
+                              selectedBar: selectedBar,
+                              cardState: cardState,
+                            ),
                           ),
-
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
                         ),
 
-                        child: RollingBarCard(
-                          names: isRolling ? rollingNames : [],
-                          selectedBar: selectedBar,
-                          cardState: cardState,
-                        ),
-                      ),
-                    ),
+                        // ==========================
+                        // Hebel
+                        // ==========================
+                        Positioned(
+                          top: machineHeight * 0.46,
+                          left: 0,
+                          right: 0,
 
-                    Positioned(
-                      bottom: -35,
-                      left: 0,
-                      right: 0,
-
-                      child: Center(
-                        child: SlotMachineLever(
-                          enabled: !isRolling,
-                          onPressed: () => pickBar(bars),
+                          child: Center(
+                            child: SlotMachineLever(
+                              enabled: !isRolling,
+                              onPressed: () => pickBar(bars),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
+
+                        // ==========================
+                        // Filter
+                        // ==========================
+                        Positioned(
+                          top: machineHeight * 0.77,
+                          left: 20,
+                          right: 20,
+
+                          child: SlotMachineFilters(
+                            selectedFilter: selectedOpeningFilter,
+
+                            onlyUnvisited: onlyUnvisited,
+
+                            disabled: isRolling,
+
+                            onFilterChanged: (filter) {
+                              setState(() {
+                                selectedOpeningFilter = filter;
+                              });
+                            },
+
+                            onUnvisitedChanged: (value) {
+                              setState(() {
+                                onlyUnvisited = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),

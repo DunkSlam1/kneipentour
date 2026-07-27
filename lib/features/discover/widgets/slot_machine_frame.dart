@@ -25,7 +25,7 @@ class SlotMachineFrame extends StatelessWidget {
             // Füße (hinter dem Gehäuse)
             // ==========================
             Positioned(
-              bottom: -layout.height * 0.035,
+              bottom: -layout.height * 0.025,
               left: layout.width * 0.18,
 
               child: _buildFoot(layout, scheme),
@@ -163,7 +163,7 @@ class SlotMachineFrame extends StatelessWidget {
               top: layout.height * 0.16,
               left: layout.innerPadding * 1.5,
               right: layout.innerPadding * 1.5,
-              height: layout.height * 0.50,
+              height: layout.height * 0.76,
 
               child: child,
             ),

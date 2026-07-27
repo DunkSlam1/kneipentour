@@ -20,8 +20,7 @@ class BarPickerService {
       }).toList(),
 
       BarPickFilter.openToday => bars.where((bar) {
-        // deine bestehende Logik bleibt hier
-        return true;
+        return OpeningStatusHelper.isOpenToday(bar.openingHours);
       }).toList(),
 
       BarPickFilter.unvisited => bars.where((bar) {
