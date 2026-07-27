@@ -13,6 +13,7 @@ import '../services/bar_picker_service.dart';
 import '../widgets/rolling_bar_card.dart';
 import '../widgets/slot_machine_lever.dart';
 import '../widgets/slot_machine_filters.dart';
+import '../widgets/slot_machine_frame.dart';
 
 class SlotMachinePage extends ConsumerStatefulWidget {
   const SlotMachinePage({super.key});
@@ -136,61 +137,55 @@ class _SlotMachinePageState extends ConsumerState<SlotMachinePage> {
   Widget build(BuildContext context) {
     final bars = ref.watch(barProvider);
 
+    final availableHeight =
+        MediaQuery.of(context).size.height -
+        MediaQuery.of(context).padding.top -
+        MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       appBar: AppBar(title: const Text('🎰 Slot Machine')),
 
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: availableHeight * 0.02,
+        ),
 
         child: Column(
           children: [
-            SlotMachineFilters(
-              selectedFilter: selectedOpeningFilter,
-              onlyUnvisited: onlyUnvisited,
-              disabled: isRolling,
+            Expanded(
+              child: SlotMachineFrame(
+                child: Stack(
+                  clipBehavior: Clip.none,
 
-              onFilterChanged: (filter) {
-                setState(() {
-                  selectedOpeningFilter = filter;
-                });
-              },
+                  children: [
+                    Positioned(
+                      top: 40,
+                      left: 16,
+                      right: 16,
+                      bottom: 70,
 
-              onUnvisitedChanged: (value) {
-                setState(() {
-                  onlyUnvisited = value;
-                });
-              },
-            ),
-
-            const SizedBox(height: 8),
-
-            SizedBox(
-              height: 300,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  SizedBox(
-                    height: 240,
-                    width: double.infinity,
-                    child: RollingBarCard(
-                      names: isRolling ? rollingNames : [],
-                      selectedBar: selectedBar,
-                      cardState: cardState,
-                    ),
-                  ),
-
-                  Positioned(
-                    bottom: -15,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: SlotMachineLever(
-                        enabled: !isRolling,
-                        onPressed: () => pickBar(bars),
+                      child: RollingBarCard(
+                        names: isRolling ? rollingNames : [],
+                        selectedBar: selectedBar,
+                        cardState: cardState,
                       ),
                     ),
-                  ),
-                ],
+
+                    Positioned(
+                      bottom: -35,
+                      left: 0,
+                      right: 0,
+
+                      child: Center(
+                        child: SlotMachineLever(
+                          enabled: !isRolling,
+                          onPressed: () => pickBar(bars),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

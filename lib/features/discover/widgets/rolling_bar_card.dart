@@ -16,12 +16,23 @@ class RollingBarCard extends StatelessWidget {
     this.selectedBar,
   });
 
-  Widget _buildRollText(String text, {bool highlight = false}) {
+  Widget _buildRollText(
+    String text,
+    double availableHeight, {
+    bool highlight = false,
+  }) {
+    final fontSize = (availableHeight * (highlight ? 0.18 : 0.13)).clamp(
+      highlight ? 18.0 : 12.0,
+      highlight ? 24.0 : 16.0,
+    );
+
     return Text(
       text,
       textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        fontSize: highlight ? 28 : 18,
+        fontSize: fontSize,
         fontWeight: highlight ? FontWeight.bold : FontWeight.normal,
       ),
     );
@@ -50,9 +61,9 @@ class RollingBarCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(vertical: 2),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
@@ -61,15 +72,19 @@ class RollingBarCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildRollText('...'),
+                  _buildRollText('...', constraints.maxHeight),
 
-                  const Divider(),
+                  Divider(height: constraints.maxHeight * 0.05),
 
-                  _buildRollText('Kneipe ziehen 🍻', highlight: true),
+                  _buildRollText(
+                    'Kneipe ziehen 🍻',
+                    constraints.maxHeight,
+                    highlight: true,
+                  ),
 
-                  const Divider(),
+                  Divider(height: constraints.maxHeight * 0.05),
 
-                  _buildRollText('...'),
+                  _buildRollText('...', constraints.maxHeight),
                 ],
               ),
             ),
@@ -88,9 +103,9 @@ class RollingBarCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 4),
+              padding: const EdgeInsets.symmetric(vertical: 2),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
@@ -99,18 +114,25 @@ class RollingBarCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildRollText(names.isNotEmpty ? names[0] : '...'),
+                  _buildRollText(
+                    names.isNotEmpty ? names[0] : '...',
+                    constraints.maxHeight,
+                  ),
 
-                  const Divider(),
+                  Divider(height: constraints.maxHeight * 0.05),
 
                   _buildRollText(
                     names.length > 1 ? names[1] : 'Kneipe wird gezogen...',
+                    constraints.maxHeight,
                     highlight: true,
                   ),
 
                   const Divider(),
 
-                  _buildRollText(names.length > 2 ? names[2] : '...'),
+                  _buildRollText(
+                    names.length > 2 ? names[2] : '...',
+                    constraints.maxHeight,
+                  ),
                 ],
               ),
             ),
