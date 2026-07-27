@@ -165,10 +165,27 @@ class _SlotMachinePageState extends ConsumerState<SlotMachinePage> {
                       right: 16,
                       bottom: 70,
 
-                      child: RollingBarCard(
-                        names: isRolling ? rollingNames : [],
-                        selectedBar: selectedBar,
-                        cardState: cardState,
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(18),
+
+                          border: Border.all(
+                            color: Colors.amber.shade700,
+                            width: 3,
+                          ),
+
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                        ),
+
+                        child: RollingBarCard(
+                          names: isRolling ? rollingNames : [],
+                          selectedBar: selectedBar,
+                          cardState: cardState,
+                        ),
                       ),
                     ),
 

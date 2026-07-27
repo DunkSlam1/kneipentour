@@ -63,7 +63,7 @@ class SlotMachineFrame extends StatelessWidget {
 
               child: Container(
                 decoration: BoxDecoration(
-                  color: scheme.surfaceContainerHighest,
+                  color: scheme.surfaceContainerHighest.withValues(alpha: 0.85),
 
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(layout.borderRadius),
@@ -86,12 +86,35 @@ class SlotMachineFrame extends StatelessWidget {
                   ],
                 ),
 
-                child: Center(
-                  child: Icon(
-                    Icons.local_activity,
-                    size: layout.width * 0.07,
-                    color: scheme.primary,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.sports_bar,
+                      size: layout.width * 0.045,
+                      color: Colors.amber.shade700,
+                    ),
+
+                    SizedBox(width: layout.width * 0.025),
+
+                    Text(
+                      'KNEIPENTOUR',
+                      style: TextStyle(
+                        fontSize: (layout.width * 0.04).clamp(16.0, 28.0),
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                        color: Colors.amber.shade700,
+                      ),
+                    ),
+
+                    SizedBox(width: layout.width * 0.025),
+
+                    Icon(
+                      Icons.local_bar,
+                      size: layout.width * 0.045,
+                      color: Colors.amber.shade700,
+                    ),
+                  ],
                 ),
               ),
             ),
