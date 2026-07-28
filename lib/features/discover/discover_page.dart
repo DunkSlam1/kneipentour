@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'pages/slot_machine_page.dart';
+import 'pages/coin_flip_page.dart';
 import 'pages/wheel_page.dart';
 import 'pages/tour_generator_page.dart';
 import 'widgets/discovery_tool_card.dart';
@@ -38,10 +39,29 @@ class DiscoverPage extends StatelessWidget {
           const SizedBox(height: 12),
 
           DiscoveryToolCard(
+            title: 'Münzwurf',
+            subtitle: 'Kopf oder Zahl entscheidet zwischen zwei Kneipen.',
+            icon: Icons.monetization_on,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CoinFlipPage()),
+              );
+            },
+          ),
+
+          const SizedBox(height: 12),
+
+          DiscoveryToolCard(
             title: 'Glücksrad',
             subtitle: 'Drehe das Rad und entdecke eine Kneipe.',
             icon: Icons.blur_circular,
-            enabled: false,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const WheelPage()),
+              );
+            },
           ),
 
           const SizedBox(height: 12),
@@ -50,7 +70,12 @@ class DiscoverPage extends StatelessWidget {
             title: 'Tourgenerator',
             subtitle: 'Plane deine nächste Kneipentour.',
             icon: Icons.route,
-            enabled: false,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const TourGeneratorPage()),
+              );
+            },
           ),
         ],
       ),
