@@ -4,6 +4,7 @@ import '../../bars/models/bar.dart';
 class AchievementDefinitions {
   static List<Achievement> visitedBarAchievements(int totalBars) {
     return [
+      // 1 Erste Runde
       Achievement(
         id: 'visited_1',
         title: 'Erste Runde',
@@ -13,6 +14,7 @@ class AchievementDefinitions {
         requiredValue: 1,
       ),
 
+      // 5 Stadtneuling
       Achievement(
         id: 'visited_5',
         title: 'Stadtneuling',
@@ -22,6 +24,7 @@ class AchievementDefinitions {
         requiredValue: 5,
       ),
 
+      // 10 Kneipenanfänger
       Achievement(
         id: 'visited_10',
         title: 'Kneipenanfänger',
@@ -31,6 +34,7 @@ class AchievementDefinitions {
         requiredValue: 10,
       ),
 
+      // 15 Stammgast
       Achievement(
         id: 'visited_15',
         title: 'Stammgast',
@@ -40,6 +44,7 @@ class AchievementDefinitions {
         requiredValue: 15,
       ),
 
+      // 20 Kneipenkenner
       Achievement(
         id: 'visited_20',
         title: 'Kneipenkenner',
@@ -49,6 +54,7 @@ class AchievementDefinitions {
         requiredValue: 20,
       ),
 
+      // 25 Barhopper
       Achievement(
         id: 'visited_25',
         title: 'Barhopper',
@@ -58,6 +64,7 @@ class AchievementDefinitions {
         requiredValue: 25,
       ),
 
+      // 30 Thekenprofi
       Achievement(
         id: 'visited_30',
         title: 'Thekenprofi',
@@ -67,6 +74,7 @@ class AchievementDefinitions {
         requiredValue: 30,
       ),
 
+      // 35 Nachtschwärmer
       Achievement(
         id: 'visited_35',
         title: 'Nachtschwärmer',
@@ -76,6 +84,7 @@ class AchievementDefinitions {
         requiredValue: 35,
       ),
 
+      // 40 Studentenlegende
       Achievement(
         id: 'visited_40',
         title: 'Studentenlegende',
@@ -85,6 +94,7 @@ class AchievementDefinitions {
         requiredValue: 40,
       ),
 
+      // 🏆 Kneipenlegende
       Achievement(
         id: 'visited_all',
         title: 'Kneipenlegende',
@@ -100,6 +110,7 @@ class AchievementDefinitions {
     final achievements = <Achievement>[];
 
     final categories = [
+      // 🍺 Kneipenkenner
       (
         type: BarType.pub,
         id: 'all_pubs',
@@ -107,13 +118,17 @@ class AchievementDefinitions {
         description: 'Besuche alle klassischen Kneipen.',
         icon: '🍺',
       ),
+
+      // 🍸 Cocktailexperte
       (
         type: BarType.bar,
         id: 'all_bars',
-        title: 'Cocktailkenner',
+        title: 'Cocktailexperte',
         description: 'Besuche alle Bars und Cocktail-Locations.',
         icon: '🍸',
       ),
+
+      // ⚽ Spieltagsprofi
       (
         type: BarType.sportsbar,
         id: 'all_sportsbars',
@@ -121,10 +136,12 @@ class AchievementDefinitions {
         description: 'Besuche alle Sportsbars.',
         icon: '⚽',
       ),
+
+      // 🍷 Weinkenner
       (
         type: BarType.winebar,
         id: 'all_winebars',
-        title: 'Weinentdecker',
+        title: 'Weinkenner',
         description: 'Besuche alle Weinbars.',
         icon: '🍷',
       ),
@@ -176,6 +193,20 @@ class AchievementDefinitions {
       ),
     );
 
+    // 📝 Erfahrener Kritiker
+
+    achievements.add(
+      Achievement(
+        id: 'experienced_critic',
+        title: 'Erfahrener Kritiker',
+        description: 'Bewerte 10 verschiedene Kneipen.',
+        icon: '📝',
+        category: AchievementCategory.collector,
+        requiredValue: 10,
+        currentValue: ratedBars,
+      ),
+    );
+
     // ⚖️ Kritischer Gast
 
     final ratings = bars
@@ -196,7 +227,7 @@ class AchievementDefinitions {
       ),
     );
 
-    // ❤️ Favoriten
+    // ❤️ Erster Favorit
 
     achievements.add(
       Achievement(
@@ -210,6 +241,7 @@ class AchievementDefinitions {
       ),
     );
 
+    // 👑 Stammplatz
     achievements.add(
       Achievement(
         id: 'favorite_collector',
@@ -224,41 +256,65 @@ class AchievementDefinitions {
 
     // 🌙 Zeit-Erfolge
 
-    int nightVisits = 0;
-    int earlyVisits = 0;
-    int weekendVisits = 0;
+    // 🌅 Frühstarter
 
-    for (final bar in visitedBars) {
-      final date = bar.visitedAt!;
-
-      // vor 20 Uhr
-      if (date.hour < 20) {
-        earlyVisits++;
-      }
-
-      // nach Mitternacht
-      if (date.hour < 5) {
-        nightVisits++;
-      }
-
-      // Freitag oder Samstag
-      if (date.weekday == DateTime.friday ||
-          date.weekday == DateTime.saturday) {
-        weekendVisits++;
-      }
-    }
+    final earlyVisits = visitedBars
+        .where((bar) => bar.visitedAt!.hour < 17)
+        .length;
 
     achievements.add(
       Achievement(
         id: 'early_start',
         title: 'Frühstarter',
-        description: 'Besuche eine Kneipe vor 20 Uhr.',
+        description: 'Besuche eine Kneipe vor 17 Uhr.',
         icon: '🌅',
         category: AchievementCategory.special,
         requiredValue: 1,
         currentValue: earlyVisits,
       ),
     );
+
+    // 🌇 Feierabendbier
+
+    final afterWorkVisits = visitedBars
+        .where((bar) => bar.visitedAt!.hour >= 17)
+        .length;
+
+    achievements.add(
+      Achievement(
+        id: 'after_work',
+        title: 'Feierabendbier',
+        description: 'Besuche eine Kneipe nach 17 Uhr.',
+        icon: '🌇',
+        category: AchievementCategory.special,
+        requiredValue: 1,
+        currentValue: afterWorkVisits,
+      ),
+    );
+
+    // 🌆 Sonnenuntergang
+
+    final sunsetVisits = visitedBars
+        .where((bar) => bar.visitedAt!.hour >= 21)
+        .length;
+
+    achievements.add(
+      Achievement(
+        id: 'sunset',
+        title: 'Sonnenuntergang',
+        description: 'Besuche eine Kneipe nach 21 Uhr.',
+        icon: '🌆',
+        category: AchievementCategory.special,
+        requiredValue: 1,
+        currentValue: sunsetVisits,
+      ),
+    );
+
+    // 🌙 Nachtschwärmer
+
+    final nightVisits = visitedBars
+        .where((bar) => bar.visitedAt!.hour < 5)
+        .length;
 
     achievements.add(
       Achievement(
@@ -272,6 +328,34 @@ class AchievementDefinitions {
       ),
     );
 
+    // 🍺 Feierabend
+
+    final weekdayVisits = visitedBars.where((bar) {
+      final day = bar.visitedAt!.weekday;
+
+      return day >= DateTime.monday && day <= DateTime.thursday;
+    }).length;
+
+    achievements.add(
+      Achievement(
+        id: 'weekday_guest',
+        title: 'Feierabend',
+        description: 'Besuche eine Kneipe von Montag bis Donnerstag.',
+        icon: '🍺',
+        category: AchievementCategory.special,
+        requiredValue: 1,
+        currentValue: weekdayVisits,
+      ),
+    );
+
+    // 📆 Wochenendgast
+
+    final weekendVisits = visitedBars.where((bar) {
+      final day = bar.visitedAt!.weekday;
+
+      return day == DateTime.friday || day == DateTime.saturday;
+    }).length;
+
     achievements.add(
       Achievement(
         id: 'weekend_guest',
@@ -283,7 +367,6 @@ class AchievementDefinitions {
         currentValue: weekendVisits,
       ),
     );
-
     return achievements;
   }
 }
