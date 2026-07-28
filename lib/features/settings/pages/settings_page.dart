@@ -6,6 +6,7 @@ import '../../bars/providers/bar_review_provider.dart';
 import '../providers/settings_provider.dart';
 import '../../sync/providers/sync_provider.dart';
 import '../../sync/utils/sync_id_generator.dart';
+import '../../achievements/services/achievement_storage.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -14,6 +15,7 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final barNotifier = ref.read(barProvider.notifier);
     final reviewNotifier = ref.read(barReviewProvider.notifier);
+    final achievementStorage = AchievementStorage();
     final settings = ref.watch(settingsProvider);
     final notifier = ref.read(settingsProvider.notifier);
     final syncAsync = ref.watch(syncProvider);
@@ -102,6 +104,7 @@ class SettingsPage extends ConsumerWidget {
                           onPressed: () async {
                             await barNotifier.clearPersonalData();
                             await reviewNotifier.clearReviews();
+                            await achievementStorage.clear();
 
                             if (context.mounted) {
                               Navigator.pop(context);

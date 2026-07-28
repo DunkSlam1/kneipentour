@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kneipentour/app/main_navigation.dart';
 import 'package:kneipentour/features/settings/providers/settings_provider.dart';
 import 'package:kneipentour/features/sync/providers/sync_startup_provider.dart';
+import 'package:kneipentour/features/achievements/widgets/achievement_overlay_listener.dart';
 
 class KneipenTourApp extends ConsumerWidget {
   const KneipenTourApp({super.key});
@@ -28,7 +29,11 @@ class KneipenTourApp extends ConsumerWidget {
 
       themeMode: settings.themeMode,
 
-      home: const MainNavigation(),
+      builder: (context, child) {
+        return AchievementOverlayListener(child: child!);
+      },
+
+      home: const AchievementOverlayListener(child: MainNavigation()),
     );
   }
 }

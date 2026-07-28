@@ -902,5 +902,26 @@ class BarRepository {
         },
       ),
     ),
+
+    Bar(
+      id: "cielo",
+      name: "Cielo",
+      address: "Papendiek 18",
+      district: "Innenstadt",
+      latitude: 51.53345142512763,
+      longitude: 9.931504073130709,
+      type: BarType.bar,
+      openingHours: const OpeningHours(
+        weekly: {
+          "Montag": ["geschlossen"],
+          "Dienstag": ["geschlossen"],
+          "Mittwoch": ["geschlossen"],
+          "Donnerstag": ["geschlossen"],
+          "Freitag": ["14:30-23:00"],
+          "Samstag": ["13:00-23:00"],
+          "Sonntag": ["14:00-18:00"],
+        },
+      ),
+    ),
   ];
 }

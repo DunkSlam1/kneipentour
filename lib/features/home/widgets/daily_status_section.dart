@@ -17,8 +17,6 @@ class DailyStatusSection extends StatelessWidget {
     for (final bar in bars) {
       final status = OpeningStatusHelper.getStatus(bar.openingHours);
 
-      debugPrint('${bar.name}: ${status.text}');
-
       if (status.state == OpeningState.open) {
         open++;
       } else if (status.text.contains('öffnet')) {
